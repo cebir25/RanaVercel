@@ -207,7 +207,31 @@ useEffect(() => {
     
     const handleGeminiError = (err: any) => {
         console.error("Gemini API Error:", err);
-        setError(t.errorOccurred);
+       let errorMessage = t.errorOccurred;
+        
+        if (!process.env.API_KEY || process.env.API_KEY === 'undefined' || process.env.API_KEY === '') {
+            errorMessage = language === 'tr' 
+                ? "API anahtarı bulunamadı. Lütfen GEMINI_API_KEY ortam değişkenini ayarlayın."
+                : "API key not found. Please set the GEMINI_API_KEY environment variable.";
+        } else if (err?.message) {
+            // Show more specific error if available
+            const errMsg = err.message.toLowerCase();
+            if (errMsg.includes('api key') || errMsg.includes('authentication')) {
+                errorMessage = language === 'tr'
+                    ? "API anahtarı geçersiz. Lütfen API anahtarınızı kontrol edin."
+                    : "Invalid API key. Please check your API key.";
+            } else if (errMsg.includes('quota') || errMsg.includes('rate limit')) {
+                errorMessage = language === 'tr'
+                    ? "API kotası aşıldı. Lütfen daha sonra tekrar deneyin."
+                    : "API quota exceeded. Please try again later.";
+            } else if (errMsg.includes('network') || errMsg.includes('fetch')) {
+                errorMessage = language === 'tr'
+                    ? "Ağ hatası. İnternet bağlantınızı kontrol edin."
+                    : "Network error. Please check your internet connection.";
+            }
+        }
+        
+        setError(errorMessage);
         setIsLoading(false);
         setLoadingMessage(null);
         setAvatarStatus(AvatarStatus.IDLE);

@@ -383,9 +383,7 @@ useEffect(() => {
         try {
             const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
             
-            const modelName = useThinkingMode || incomingParts.some(p => p.imageUrl) || activeFile || containsUrl
-                ? 'gemini-3-pro-preview'
-                : 'gemini-2.5-flash';
+            const modelName = 'gemini-1.5-flash';
             
             let config: any = {};
             if (useThinkingMode) {

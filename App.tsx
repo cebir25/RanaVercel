@@ -383,7 +383,7 @@ useEffect(() => {
         try {
             const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
             
-            const modelName = 'gemini-1.5-flash-latest';
+            const modelName = 'gemini-2.5-flash';
             
             let config: any = {};
             if (useThinkingMode) {

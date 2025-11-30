@@ -45,7 +45,8 @@ export const Whiteboard: React.FC<WhiteboardProps> = ({ onAnalyze, t }) => {
 
         const rect = parentElement.getBoundingClientRect();
         
-        const currentData = contextRef.current?.getImageData(0, 0, canvas.width, canvas.height);
+         const hasContent = canvas.width > 0 && canvas.height > 0;
+        const currentData = hasContent ? contextRef.current?.getImageData(0, 0, canvas.width, canvas.height) : null;
         
         canvas.width = rect.width * dpr;
         canvas.height = rect.height * dpr;
@@ -57,11 +58,13 @@ export const Whiteboard: React.FC<WhiteboardProps> = ({ onAnalyze, t }) => {
         context.strokeStyle = color;
         context.lineWidth = size;
         
-        if (currentData) {
+       // Always fill with white background first
+        context.fillStyle = '#FFFFFF';
+        context.fillRect(0, 0, canvas.width / dpr, canvas.height / dpr);
+        
+        // Then restore previous content if it existed
+        if (currentData && hasContent) {
             context.putImageData(currentData, 0, 0);
-        } else {
-            context.fillStyle = '#FFFFFF';
-            context.fillRect(0, 0, canvas.width / dpr, canvas.height / dpr);
         }
     };
 

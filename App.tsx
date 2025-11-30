@@ -127,44 +127,35 @@ const App: React.FC = () => {
         try {
             const savedState = localStorage.getItem('dyn201-ai-assistant-state');
             if (savedState) {
-                const { messages: savedMessages, language: savedLanguage, activeFile: savedActiveFile } = JSON.parse(savedState);
-                setMessages(savedMessages);
-                setLanguage(savedLanguage);
-                setActiveFile(savedActiveFile);
-                // Re-populate the history ref
-                chatHistoryRef.current = savedMessages.slice(1);
-            } else {
-                 setMessages([
-                    {
-                        sender: Sender.MODEL,
-                        parts: [{ text: t.initialMessage }],
-                        timestamp: Date.now(),
-                    }
-                ]);
-            }
+              
+              const { language: savedLanguage } = JSON.parse(savedState);
+                if (savedLanguage) {
+                    setLanguage(savedLanguage);
+                }
+            } 
         } catch (e) {
             console.error("Failed to load state from localStorage", e);
-             setMessages([
-                {
-                    sender: Sender.MODEL,
-                    parts: [{ text: t.initialMessage }],
-                    timestamp: Date.now(),
-                }
-            ]);
         }
+
+      setMessages([
+            {
+                sender: Sender.MODEL,
+                parts: [{ text: t.initialMessage }],
+                timestamp: Date.now(),
+            }
+        ]);
+        chatHistoryRef.current = [];
+        setActiveFile(null);
     }, []);
 
     useEffect(() => {
-        // Save state to localStorage whenever it changes
-        if (messages.length > 0) {
-             try {
-                const stateToSave = { messages, language, activeFile };
-                localStorage.setItem('dyn201-ai-assistant-state', JSON.stringify(stateToSave));
-            } catch (e) {
-                console.error("Failed to save state to localStorage", e);
-            }
+          try {
+            const stateToSave = { language };
+            localStorage.setItem('dyn201-ai-assistant-state', JSON.stringify(stateToSave));
+        } catch (e) {
+            console.error("Failed to save language to localStorage", e);
         }
-    }, [messages, language, activeFile]);
+    }, [language]);
 
     useEffect(() => {
       scrollToBottom();
@@ -177,18 +168,15 @@ useEffect(() => {
 }, [messages]);
 
     useEffect(() => {
-        const savedState = localStorage.getItem('dyn201-ai-assistant-state');
-        // Only update the initial message if there's no saved history
-        if (!savedState) {
-             const newMessage = {
-                sender: Sender.MODEL,
-                parts: [{ text: t.initialMessage }],
-                timestamp: Date.now()
-            };
-            setMessages([newMessage]);
-            chatHistoryRef.current = [];
-            setActiveFile(null);
-        }
+         // Reset chat when language changes
+        const newMessage = {
+            sender: Sender.MODEL,
+            parts: [{ text: t.initialMessage }],
+            timestamp: Date.now()
+        };
+        setMessages([newMessage]);
+        chatHistoryRef.current = [];
+        setActiveFile(null);
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [language]);
 

@@ -1,0 +1,7 @@
+{
+  "name": "Copy of Copy of DYN 201 AI Avatar Assistant",
+  "description": "An AI-driven conversational avatar assistant for the DYN 201 course. It can answer questions via voice, analyze images of equations, and provide information grounded in course materials.",
+  "requestFramePermissions": [
+    "microphone"
+  ]
+}
